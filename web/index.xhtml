@@ -1,0 +1,189 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:jsf="http://xmlns.jcp.org/jsf"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+    <h:head>
+        <title>Facelet Title</title>
+        <link href="resource/css/bootstrap-table.min.css" rel="stylesheet" type="text/css"/>
+        <link href="resource/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+        <script src="resource/js/bootstrap-table.min.js" type="text/javascript"></script>
+       <script src="resource/js/jquery-1.12.0.min.js" type="text/javascript"></script>
+        <script src="resource/js/bootstrap.min.js" type="text/javascript"></script>
+        
+    </h:head>
+    <h:body>
+        <div>
+            <c:if test="#{controladorUsuarios.estado==1}">
+            <div class="alert alert-success" role="alert">
+  <a href="#" class="alert-link">Se registro Exitosamente</a>
+            </div>
+            </c:if>
+             <c:if test="#{controladorUsuarios.estado==2}">
+            <div class="alert alert-warning" role="alert">
+            <a href="#" class="alert-link">No se pudo Registrar</a>
+            </div>
+            </c:if>
+
+            
+        </div>
+        
+        #{controladorUsuarios.borrarEstado()}
+        
+        <div class="span3">
+            <h2>Registrar Usuario</h2>
+            <h:form>
+                <label>Documento</label>
+                <input type="text" name="firstname" class="span3" jsf:value="#{controladorUsuarios.user.documento}"/><br/>
+                <label>Nombre</label>
+                <input type="text" name="lastname" class="span3" jsf:value="#{controladorUsuarios.user.nombre}"/><br/>
+                <label>Apellido</label>
+                <input type="text" name="email" class="span3" jsf:value="#{controladorUsuarios.user.apellido}"/><br/>
+                <label>Equipo</label>
+                <input type="text" name="username" class="span3" jsf:value="#{controladorUsuarios.user.equipo}"/><br/>
+                <h:commandButton value="Registrar" action="#{controladorUsuarios.registrar()}" class="btn btn-success"></h:commandButton><br/>
+                <div class="clearfix"></div>
+
+            </h:form>
+        </div>
+        <div class="container">
+            <div class="row">    
+
+                <h:form>
+
+
+
+
+                    <table class="table table-striped " data-toggle="table" data-height="400" data-show-toggle="true" data-show-columns="true" data-search="true" data-pagination="true" data-page-size="5" data-page-list="[4,8,12, All]">
+                        <thead>
+                            <tr>
+                                <th data-halign="center" data-align="center">Documento</th>
+                                <th  data-halign="center" data-align="center">Nombre</th>
+                                <th  data-halign="center" data-align="center">Apellido</th>
+                                <th  data-halign="center" data-align="center">Equipo</th>
+                                <th  data-halign="center" data-align="center">Editar o Eliminar</th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <c:forEach items="#{controladorUsuarios.all}" var="u">
+                                <tr>
+                                    <td>#{u.documento}</td>
+                                    <td>#{u.nombre}</td>
+                                    <td>#{u.apellido}</td>
+                                    <td>#{u.equipo}</td>
+                                    <td>
+                                        <h:commandLink onclick="modalEditar()">
+                                                <h:graphicImage value="/resource/imgs/edit.png"   height="32px" width="32px" />
+                                                <!--El render es el id que se le da h:panelGroup sirve para pasar los valores que se quieren enlistar-->
+
+                                                <f:ajax render="fomVentanas:editar defaultForm"
+                                                        listener="#{controladorUsuarios.setUser(u)}">
+                                                </f:ajax>
+                                            </h:commandLink>
+                                         <h:commandLink onclick="modalEliminar()">
+                                        <h:graphicImage value="/resource/imgs/delete.png"  height="32px" width="32px" />
+                                        
+                                        <f:ajax render="fomVentanas:misValoresEliminar"
+                                                listener="#{controladorUsuarios.setUser(u)}">
+                                        </f:ajax>
+                                    </h:commandLink> 
+                                    </td>
+                                </tr>
+                            </c:forEach>
+                        </tbody>
+
+                    </table>
+
+
+                    <!-- /.modal -->
+
+                </h:form> 
+
+                <h:form id="fomVentanas">
+                    <div class="modal fade" tabindex="-1" role="dialog"
+                             id="myModalEliminar">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal"
+                                                aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                        <h4 class="modal-title">Desea Eliminar El usuario?</h4>
+                                    </div>
+
+                                    <h:panelGroup id="misValoresEliminar" class="modal-body">
+                                       Nombre:#{controladorUsuarios.user.nombre} <br />
+                                       Documento:#{controladorUsuarios.user.documento}  <br />
+                                       
+                                    </h:panelGroup>
+
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-default"
+                                                data-dismiss="modal">Salir</button>
+                                        <h:commandButton class="btn btn-primary"
+                                                         action="#{controladorUsuarios.eliminar()}"
+                                                         value="Eliminar">
+                                        </h:commandButton>
+                                    </div>
+                                </div>
+                                <!-- /.modal-content -->
+                            </div>
+                            <!-- /.modal-dialog -->
+                        </div>
+                    
+                    
+                    
+                    <div class="modal fade" id="modalEditar" tabindex="-1"
+                         role="dialog" aria-labelledby="myModalLabel">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal"
+                                            aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                    <h4 class="modal-title" id="myModalLabel">Modificar Usuario</h4>
+                                </div>
+                                <div class="col-md-12">
+                                    <h:panelGroup id="editar" styleClass="modal-mody">
+                                        <label>Documento</label>
+                                        <input type="text" name="firstname" class="span3" jsf:value="#{controladorUsuarios.user.documento}"/><br/>
+                                        <label>Nombre</label>
+                                        <input type="text" name="lastname" class="span3" jsf:value="#{controladorUsuarios.user.nombre}"/><br/>
+                                        <label>Apellido</label>
+                                        <input type="text" name="email" class="span3" jsf:value="#{controladorUsuarios.user.apellido}"/><br/>
+                                        <label>Equipo</label>
+                                        <input type="text" name="username" class="span3" jsf:value="#{controladorUsuarios.user.equipo}"/><br/>
+
+                                    </h:panelGroup>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-default"
+                                            data-dismiss="modal">Salir</button>
+                                    <h:commandButton class="btn btn-primary"
+                                                     action="#{controladorUsuarios.editar()}"      value="Guardar">
+                                    </h:commandButton>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </h:form>
+
+
+            </div>
+        </div>
+        <script>
+            function modalEliminar() {
+                $('#myModalEliminar').modal('show');
+            }
+            function modalEditar() {
+                $('#modalEditar').modal('show');
+            }
+        </script>
+    </h:body>
+</html>
+
